@@ -23,14 +23,17 @@ clean_babies <- babies %>%
 
 # Explore data (simple version)
 # Relationship: baby weight and smoke
-explore_babies <- clean_babies %>%
+bbwt_smoke <- clean_babies %>%
   filter(smoke != 9) %>%
   group_by(smoke) %>%
   summarise(bbwt_mean = mean(baby_wt, na.rm = TRUE))
+bbwt_smoke
 
 # Relationship: baby weight and mother weight
 m_wt_filter <- filter(clean_babies, (m_wt != 999))
-bb_m_weight <- lm(baby_wt ~ m_wt, data = bb_m_filter)
+bb_m_weight <- lm(baby_wt ~ m_wt, data = m_wt_filter)
 bb_m_weight_summary <- summary(bb_m_weight)
+bb_m_weight_summary
 
-bb_m_wt_plot <- ggplot(bb_m_filter, aes(m_wt, baby_wt)) + geom_point() + geom_smooth(method = lm)
+bb_m_wt_plot <- ggplot(m_wt_filter, aes(m_wt, baby_wt)) + geom_point() + geom_smooth(method = lm)
+bb_m_wt_plot
