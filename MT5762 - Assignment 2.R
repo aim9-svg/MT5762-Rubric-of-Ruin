@@ -38,6 +38,7 @@ clean_babies$income[clean_babies$income > 9] = NA
 clean_babies$smoke[clean_babies$smoke == 9] = NA
 clean_babies$smoke_time[clean_babies$smoke_time > 8] = NA
 clean_babies$cig_number[clean_babies$cig_number > 8] = NA
+clean_babies$marital[clean_babies$marital == 0] = NA
 
 # Count the number of NA in each column
 na_flag <- apply(is.na(clean_babies), 2, sum)
@@ -51,12 +52,78 @@ full_df = na.omit(clean_babies)
 # Reorder the variables
 clean_babies <- clean_babies[,c(na_col,full_col)]
 # Fill in the missing value with mice interpolation based on random forest model
-miceMod <- mice(clean_babies[, !names(clean_babies) %in% "medv"], method="rf") 
+miceMod <- mice(clean_babies[, !names(clean_babies) %in% "baby_wt"], method="rf") 
 # Generate complete data
 babies_data <- complete(miceMod)  
 # Check for missing values in the dataset
 anyNA(babies_data)
 
+## Redefine some factor variables(divided by group) to creat dummy variables
+# mother's race
+babies_data$m_race[babies_data$m_race < 6] = "white"
+babies_data$m_race[babies_data$m_race == 6] = "mex"
+babies_data$m_race[babies_data$m_race == 7] = "black"
+babies_data$m_race[babies_data$m_race == 8] = "asian"
+babies_data$m_race[babies_data$m_race == 9] = "mixed"
+# father's race
+babies_data$d_race[babies_data$d_race < 6] = "white"
+babies_data$d_race[babies_data$d_race == 6] = "mex"
+babies_data$d_race[babies_data$d_race == 7] = "black"
+babies_data$d_race[babies_data$d_race == 8] = "asian"
+babies_data$d_race[babies_data$d_race == 9] = "mixed"
+
+# mother's education
+babies_data$m_edu[babies_data$m_edu == 0] = "less than 8th"
+babies_data$m_edu[babies_data$m_edu == 1] = "8th-12th"
+babies_data$m_edu[babies_data$m_edu == 2] = "HS"
+babies_data$m_edu[babies_data$m_edu == 3] = "HS+trade"
+babies_data$m_edu[babies_data$m_edu == 4] = "HS+college"
+babies_data$m_edu[babies_data$m_edu == 5] = "College graduate"
+# father's education
+babies_data$d_edu[babies_data$d_edu == 0] = "less than 8th"
+babies_data$d_edu[babies_data$d_edu == 1] = "8th-12th"
+babies_data$d_edu[babies_data$d_edu == 2] = "HS"
+babies_data$d_edu[babies_data$d_edu == 3] = "HS+trade"
+babies_data$d_edu[babies_data$d_edu == 4] = "HS+college"
+babies_data$d_edu[babies_data$d_edu == 5] = "College graduate"
+
+# marital
+babies_data$marital[babies_data$marital == 1] = "married"
+babies_data$marital[babies_data$marital == 2] = "legally separated"
+babies_data$marital[babies_data$marital == 3] = "divorced"
+babies_data$marital[babies_data$marital == 4] = "widowed"
+babies_data$marital[babies_data$marital == 5] = "never married"
+
+# smoke
+babies_data$smoke[babies_data$smoke == 0] = "never"
+babies_data$smoke[babies_data$smoke == 1] = "smokes now"
+babies_data$smoke[babies_data$smoke == 2] = "until current pregnancy"
+babies_data$smoke[babies_data$smoke == 3] = "once did not now"
+
+# smoke_time (If mother quit, how long ago?)
+babies_data$smoke_time[babies_data$smoke_time == 0] = "never smoked"
+babies_data$smoke_time[babies_data$smoke_time == 1] = "still smokes"
+babies_data$smoke_time[babies_data$smoke_time == 2] = "during current preg"
+babies_data$smoke_time[babies_data$smoke_time == 3] = "within 1 yr"
+babies_data$smoke_time[babies_data$smoke_time == 4] = "1 to 2 years ago"
+babies_data$smoke_time[babies_data$smoke_time == 5] = "2 to 3 yr ago"
+babies_data$smoke_time[babies_data$smoke_time == 6] = "3 to 4 yrs ago"
+babies_data$smoke_time[babies_data$smoke_time == 7] = "5 to 9yrs ago"
+babies_data$smoke_time[babies_data$smoke_time == 8] = "10+yrs ago"
+
+# cig_number
+babies_data$cig_number[babies_data$cig_number == 0] = "0"
+babies_data$cig_number[babies_data$cig_number == 1] = "1-4"
+babies_data$cig_number[babies_data$cig_number == 2] = "5-9"
+babies_data$cig_number[babies_data$cig_number == 3] = "10-14"
+babies_data$cig_number[babies_data$cig_number == 4] = "15-19"
+babies_data$cig_number[babies_data$cig_number == 5] = "20-29"
+babies_data$cig_number[babies_data$cig_number == 6] = "30-39"
+babies_data$cig_number[babies_data$cig_number == 7] = "40-60"
+babies_data$cig_number[babies_data$cig_number == 8] = "60+"
+
+#income
+?????
 
 
 ##  Explore data 
