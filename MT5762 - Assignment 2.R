@@ -52,7 +52,7 @@ full_df = na.omit(clean_babies)
 # Reorder the variables
 clean_babies <- clean_babies[,c(na_col,full_col)]
 # Fill in the missing value with mice interpolation based on random forest model
-miceMod <- mice(clean_babies[, !names(clean_babies) %in% "baby_wt"], method="rf") 
+miceMod <- mice(clean_babies[, !names(clean_babies) %in% "baby"], method="rf") 
 # Generate complete data
 babies_data <- complete(miceMod)  
 # Check for missing values in the dataset
