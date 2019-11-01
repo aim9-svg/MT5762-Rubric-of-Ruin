@@ -2,6 +2,7 @@ library(multcomp)
 library(car) 
 library(MASS) 
 library(leaps)
+library(effects)
 
 # Explore the difference of 'baby_wt' in different 'm_race' groups
 # Convert grouping columns to factor variables  
@@ -106,23 +107,30 @@ lmData
 lm1 <- lm(baby_wt ~ ., data = lmData )
 summary(lm1)
 
-# The implementation of stepwise regression model 
-## based on Akaike Information Criterion (AIC)
+# Stepwise regression analysis
+
+## 1. Based on Akaike Information Criterion (AIC)
 ## AIC can be used to compare models, taking into account the statistical fit of the model and the number of parameters used to fit
 ## The model with a smaller AIC value should be selected optimally, which means that the model has obtained sufficient fitting degree with fewer parameters
 lms1 <- stepAIC(lm1)
-formula.AIC <- as.formula(baby_wt~gestation+m_ht+d_race+d_wt+smoke+previous_preg)
-# stepwise method
-## All-subsets regression
+## Get the model formula of linear regression 
+lms1$call
+#formula.AIC = baby_wt ~ gestation + m_ht + d_race + d_wt + smoke + previous_preg
+
+## Show the detailed results of the fitting
+summary(lms1)
+
+## 2. All-subsets regression
 ## It attempts to model all the combinations of features and then selects the best model
 lms1.full <- regsubsets(baby_wt~.,data=lmData,nvmax = 12) 
-## Forward stepwise regression
+## 3. Forward stepwise regression
 ## Add a predictive variable to the model one at a time until the addition of the variable does not improve the model
 lms1.fwd <- regsubsets(baby_wt~., data=lmData,nvmax = 12,method = "forward")
-## Backward stepwise regression
+## 4. Backward stepwise regression
 ## Build a model that contains all the predictive variables, then delete one variable at a time until the model quality is reduced
 lms1.bwd <- regsubsets(baby_wt~., data=lmData,nvmax = 12,method = "backward")
 
+## The results of stepwise regression analysis for 'All-subsets', 'Forward stepwise', 'Backward stepwise' regression   
 lms1.full.summary <- summary(lms1.full)
 lms1.fwd.summary <- summary(lms1.fwd)
 lms1.bwd.summary <- summary(lms1.bwd)
@@ -161,21 +169,23 @@ plot(lms1.bwd.summary$adjr2,xlab="Number of Variables",ylab="Adjusted RSq",type 
 which.max(lms1.bwd.summary$adjr2)
 points(which.max(lms1.bwd.summary$adjr2),lms1.bwd.summary$adjr2[10],col="red",cex=2,pch=20)
 
-# Show stepwise regression results
+## Get the model formula of linear regression 
 coef(lms1.full,7)
-formula.full.7 <- as.formula(baby_wt~gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg)  
+### formula.full.7 = baby_wt~gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg
+                   
 coef(lms1.full,9)
-formula.full.9 <- as.formula(baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg)
+### formula.full.9 = baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg
 
 coef(lms1.fwd,7)
-formula.fwd.7 <- as.formula(baby_wt~gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg)
+### formula.fwd.7 = baby_wt~gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg
 coef(lms1.fwd,9)
-formula.fwd.9 <- as.formula(baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg)
-  
+### formula.fwd.9 = baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg
 coef(lms1.bwd,7) 
-formula.bwd.7 <- as.formula(baby_wt~gestation+m_ht+d_race+d_wt+smoke+previous_preg)
+### formula.bwd.7 = baby_wt~gestation+m_ht+d_race+d_wt+smoke+previous_preg
+              
 coef(lms1.bwd,10)
-formula.bwd.7 <- as.formula(baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg)
+### formula.bwd.7 = baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg
+                    
     
 # According to the above results 
 # a regression model is obtained according to AIC
@@ -191,3 +201,47 @@ lm.f1 <- lm(baby_wt~gestation+m_ht+d_race+d_wt+smoke+previous_preg, data = lmDat
 lm.f2 <- lm(baby_wt~gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg, data = lmData )
 
 lm.f3 <- lm(baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg , data = lmData )
+
+# Consider first-order interactions as part of pool of models
+#1. Consider all first-order interactions in 'lm.f1' model
+lm.f1.foi <- lm(baby_wt~(gestation+m_ht+d_race+d_wt+smoke+previous_preg)^2, data = lmData)
+lmsf1 <- step(lm.f3.foi)
+summary(lmsf1)
+# With the effect () function in the effects package
+# it can graphically display the results of the interaction items
+plot(effect("gestation:m_race", lmsf1), multiline=TRUE)
+plot(effect("gestation:m_wt", lmsf1), multiline=TRUE)
+plot(effect("gestation:previous_preg", lmsf1), multiline=TRUE)
+plot(effect("m_wt:d_wt", lmsf1), multiline=TRUE)
+
+#2. Consider all first-order interactions in 'lm.f2' model
+lm.f2.foi <- lm(baby_wt~(gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg)^2, data = lmData )
+lmsf2 <- step(lm.f2.foi)
+summary(lmsf2)
+# Plot the results of the interactions
+plot(effect("gestation:m_race", lmsf2), multiline=TRUE)
+plot(effect("gestation:previous_preg", lmsf2), multiline=TRUE)
+
+#2. Consider all first-order interactions in 'lm.f3' model
+lm.f3.foi <- lm(baby_wt~(gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg)^2, data = lmData )
+# Use stepwise method to improve the model
+lmsf3 <- step(lm.f3.foi)
+summary(lmsf3)
+# Plot the results of the interactions 
+plot(effect("gestation:m_race", lmsf3), multiline=TRUE)
+plot(effect("gestation:m_wt", lmsf3), multiline=TRUE)
+plot(effect("gestation:previous_preg", lmsf3), multiline=TRUE)
+plot(effect("m_wt:d_wt", lmsf3), multiline=TRUE)
+
+# Finally, remove duplicate models('lmsf1' and 'lmsf3' are the same, keep one of them)
+# Keep 'lmsf1'('lmsf3') and 'lmsf2' 
+# We get two final models
+lm.final1 <- lm(baby_wt ~ gestation + m_race + m_ht + m_wt + d_wt + 
+                  smoke + previous_preg + gestation:m_race + gestation:m_wt + 
+                  gestation:previous_preg + m_wt:d_wt, data = lmData) 
+
+lm.final2 <- lm(baby_wt ~ gestation + m_race + m_ht + d_wt + smoke + 
+                  previous_preg + gestation:m_race + gestation:previous_preg, 
+                data = lmData)
+summary(lm.final1)
+summary(lm.final2)
