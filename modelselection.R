@@ -67,9 +67,9 @@ summary(fit6)
 # Explore the difference of 'baby_wt' in different 'cig_number' groups
 # Repeat the process above
 babies_data$cig_number <- factor(babies_data$cig_number)
-qqPlot(lm(baby_wt~cig_number, data = test_cig), simulate = TRUE, main = 'QQ Plot', labels = FALSE)
-bartlett.test(baby_wt~cig_number, data = test_cig)
-fit7 <- aov(baby_wt~cig_number, data = test_cig)
+qqPlot(lm(baby_wt~cig_number, data = babies_data), simulate = TRUE, main = 'QQ Plot', labels = FALSE)
+bartlett.test(baby_wt~cig_number, data = babies_data)
+fit7 <- aov(baby_wt~cig_number, data = babies_data)
 # p value = 1.66e-05 ***, There are significant differences between groups
 summary(fit7)
 
