@@ -52,40 +52,17 @@ plot(results, index = 5)
 
 # Confidence intervals via boot.ci() function
 # note: bca = bias-corrected, accelerated (adjusted bootstrap percentile)
-intercept_ci <- as.numeric(boot.ci(results, type = "bca", index = 1)$bca)
-gestation_ci <- as.numeric(boot.ci(results, type = "bca", index = 2)$bca)
-m_raceblack_ci <- as.numeric(boot.ci(results, type = "bca", index = 3)$bca)
-m_racemex_ci <- as.numeric(boot.ci(results, type = "bca", index = 4)$bca)
-m_racemixed_ci <- as.numeric(boot.ci(results, type = "bca", index = 5)$bca)
-m_racewhite_ci <- as.numeric(boot.ci(results, type = "bca", index = 6)$bca)
-m_ht_ci <- as.numeric(boot.ci(results, type = "bca", index = 7)$bca)
-m_wt_ci <- as.numeric(boot.ci(results, type = "bca", index = 8)$bca)
-dwt_ci <- as.numeric(boot.ci(results, type = "bca", index = 9)$bca)
-smokeonce_did_not_now_ci <- as.numeric(boot.ci(results, type = "bca", index = 10)$bca)
-smokesmokes_now_ci <- as.numeric(boot.ci(results, type = "bca", index = 11)$bca)
-smokeuntil_current_pregnancy_ci <- as.numeric(boot.ci(results, type = "bca", index = 12)$bca)
-previous_preg_ci <- as.numeric(boot.ci(results, type = "bca", index = 13)$bca)
-gestation_m_raceblack_ci <- as.numeric(boot.ci(results, type = "bca", index = 14)$bca)
-gestation_m_racemex_ci <- as.numeric(boot.ci(results, type = "bca", index = 15)$bca)
-gestation_m_racemixed_ci <- as.numeric(boot.ci(results, type = "bca", index = 16)$bca)
-gestation_m_racewhite_ci <- as.numeric(boot.ci(results, type = "bca", index = 17)$bca)
-gestation_m_wt_ci <- as.numeric(boot.ci(results, type = "bca", index = 18)$bca)
-gestation_previous_preg_ci <- as.numeric(boot.ci(results, type = "bca", index = 19)$bca)
-m_wt_d_wt_ci <- as.numeric(boot.ci(results, type = "bca", index = 20)$bca)
+get_bootcoef <- function(x) {
+  boot_coef <- data.frame(matrix(NA, ncol = 2, nrow = 20))
+  colnames(boot_coef) <- c("boot_upper","boot_lower")
+  for (i in 1:20) {
+    ci <- as.numeric(boot.ci(results, type = "bca", index = i)$bca)
+    boot_coef[i, ] <- (c(ci[4], ci[5]))
+  }
+  return(boot_coef) 
+}
 
-boot_coef <- as.data.frame(matrix(c(intercept_ci[4], intercept_ci[5], gestation_ci[4], gestation_ci[5],
-                                    m_raceblack_ci[4], m_raceblack_ci[5], m_racemex_ci[4], m_racemex_ci[5], 
-                                    m_racemixed_ci[4], m_racemixed_ci[5], m_racewhite_ci[4], m_racewhite_ci[5], 
-                                    m_ht_ci[4], m_ht_ci[5], m_wt_ci[4], m_wt_ci[5], dwt_ci[4], dwt_ci[5],
-                                    smokeonce_did_not_now_ci[4], smokeonce_did_not_now_ci[5],
-                                    smokesmokes_now_ci[4], smokesmokes_now_ci[5], smokeuntil_current_pregnancy_ci[4], 
-                                    smokeuntil_current_pregnancy_ci[5], previous_preg_ci[4], previous_preg_ci[5], 
-                                    gestation_m_raceblack_ci[4], gestation_m_raceblack_ci[5], gestation_m_racemex_ci[4],
-                                    gestation_m_racemex_ci[5], gestation_m_racemixed_ci[4], gestation_m_racemixed_ci[5],
-                                    gestation_m_racewhite_ci[4], gestation_m_racewhite_ci[5], gestation_m_wt_ci[4],
-                                    gestation_m_wt_ci[5], gestation_previous_preg_ci[4], gestation_previous_preg_ci[5],
-                                    m_wt_d_wt_ci[4], m_wt_d_wt_ci[5]), ncol = 2, byrow = TRUE))
-colnames(boot_coef) <- c("boot_upper","boot_lower")
+boot_coef <- get_bootcoef()
 
 ## Confidence intervals via summary(lm()) function
 lm_coef <- as.data.frame(confint(lm.final1))
