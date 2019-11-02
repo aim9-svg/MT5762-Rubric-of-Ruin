@@ -41,14 +41,12 @@ model_coef <- function(data, index) {
             smoke + previous_preg + gestation:m_race + gestation:m_wt + 
             gestation:previous_preg + m_wt:d_wt, babies_data, subset = index))
 }
+set.seed(20191102)
 results <- boot(babies_data, model_coef, 1000)
 
-# plot histogram for the first 5 terms 
+# plot histogram for the first 2 terms 
 plot(results, index = 1)
 plot(results, index = 2)
-plot(results, index = 3)
-plot(results, index = 4)
-plot(results, index = 5)
 
 # Confidence intervals via boot.ci() function
 # note: bca = bias-corrected, accelerated (adjusted bootstrap percentile)
@@ -70,6 +68,13 @@ lm_coef <- as.data.frame(confint(lm.final1))
 # Compare two CIs
 comparison <- cbind(as.data.frame(summary(lm.final1)$coefficient[, 1]), lm_coef, boot_coef)
 comparison <- round(comparison, 5)
+
+### Practical and statistical Significance
+
+babies_smoke <- clean_babies %>%
+  filter(smoke != 9) %>%
+  group_by(smoke) %>%
+  summarise(bbwt_mean = mean(baby_wt, na.rm = TRUE))
 
 ### Reference
 # http://www.sthda.com/english/articles/38-regression-model-validation/157-cross-validation-essentials-in-r
