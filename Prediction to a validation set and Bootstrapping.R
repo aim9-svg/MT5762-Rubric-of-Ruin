@@ -1,3 +1,8 @@
+install.packages("caret")
+install.packages("boot")
+library(caret)
+library(boot)
+
 ### Cross-Validation
 
 ## Prediction to a validation set
