@@ -369,11 +369,27 @@ p_wt_marital <- ggplot(babies_data,aes(marital,baby_wt, fill = marital))+
   scale_fill_discrete(name="Marital")
 
 
-# Put the plots together(in report)
+
+# Show all the plots
 p_wt_ges
+p_wt_mrace
+p_wt_medu
+p_wt_mage
+p_wt_mht
+p_wt_mwt
+p_wt_drace
+p_wt_dedu
+p_wt_dage
+p_wt_dht
+p_wt_dwt
+p_wt_smo
+p_wt_smot
+p_wt_cig
 p_wt_inc
 p_wt_preg
 p_wt_marital
+
+# Put some plots together
 multiplot(p_wt_mrace,p_wt_medu,cols = 2)
 multiplot(p_wt_mage,p_wt_mht,p_wt_mwt,cols = 3)
 multiplot(p_wt_drace,p_wt_dedu,cols = 2)
