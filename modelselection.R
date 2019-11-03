@@ -184,7 +184,7 @@ coef(lms1.bwd,7)
 ### formula.bwd.7 = baby_wt~gestation+m_ht+d_race+d_wt+smoke+previous_preg
               
 coef(lms1.bwd,10)
-### formula.bwd.7 = baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg
+### formula.bwd.10 = baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg
                     
     
 # According to the above results 
@@ -205,41 +205,58 @@ lm.f3 <- lm(baby_wt~gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg ,
 # Consider first-order interactions as part of pool of models
 #1. Consider all first-order interactions in 'lm.f1' model
 lm.f1.foi <- lm(baby_wt~(gestation+m_ht+d_race+d_wt+smoke+previous_preg)^2, data = lmData)
-lmsf1 <- step(lm.f3.foi)
+lmsf1 <- step(lm.f1.foi)
 summary(lmsf1)
+ar2.1 <- summary(lmsf1)$adj.r.squared
 # With the effect () function in the effects package
 # it can graphically display the results of the interaction items
-plot(effect("gestation:m_race", lmsf1), multiline=TRUE)
-plot(effect("gestation:m_wt", lmsf1), multiline=TRUE)
+plot(effect("gestation:d_race", lmsf1), multiline=TRUE)
+plot(effect("gestation:smoke", lmsf1), multiline=TRUE)
 plot(effect("gestation:previous_preg", lmsf1), multiline=TRUE)
-plot(effect("m_wt:d_wt", lmsf1), multiline=TRUE)
+
 
 #2. Consider all first-order interactions in 'lm.f2' model
 lm.f2.foi <- lm(baby_wt~(gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg)^2, data = lmData )
 lmsf2 <- step(lm.f2.foi)
 summary(lmsf2)
+ar2.2 <- summary(lmsf2)$adj.r.squared
 # Plot the results of the interactions
-plot(effect("gestation:smoke", lmsf2), multiline=TRUE)
+plot(effect("gestation:m_race", lmsf2), multiline=TRUE)
 plot(effect("gestation:previous_preg", lmsf2), multiline=TRUE)
-plot(effect("d_wt:smoke", lmsf2), multiline=TRUE)
 
 #3. Consider all first-order interactions in 'lm.f3' model
 lm.f3.foi <- lm(baby_wt~(gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg)^2, data = lmData )
 # Use stepwise method to improve the model
 lmsf3 <- step(lm.f3.foi)
 summary(lmsf3)
+ar2.3 <- summary(lmsf3)$adj.r.squared
 # Plot the results of the interactions 
 plot(effect("gestation:m_race", lmsf3), multiline=TRUE)
 plot(effect("gestation:m_wt", lmsf3), multiline=TRUE)
 plot(effect("gestation:previous_preg", lmsf3), multiline=TRUE)
 plot(effect("m_wt:d_wt", lmsf3), multiline=TRUE)
 
-# Finally, remove duplicate models('lmsf1' and 'lmsf3' are the same, keep one of them)
-# Keep 'lmsf1'('lmsf3') and 'lmsf2' 
+ABR2 <- data.frame(
+  AIC(lmsf1,lmsf2,lmsf3),
+  BIC(lmsf1,lmsf2,lmsf3),
+  c(ar2.1,ar2.2,ar2.3)
+  )
+colnames = c("df", "AIC", "df", "BIC", "Adjusted R-squared")
+colnames(ABR2) <- c("df", "AIC", "df", "BIC", "Adjusted R-squared")
+ABR2 <- ABR2[,-3]
+ABR2
+
+# Finally, according to AIC, BIC, and Adjusted R-squared 
+# A comprehensive comparison shows that there is little difference in Adjusted R-squared between them
+# More specifically, AIC values of lmsf1 and lmsf2 have little difference, while BIC value of lmsf2 is significantly lower than that of lmsf1.
+# Compared with lmsf1, both AIC and BIC of lmsf3 are lower than that of lmsf1
+# In conclusion, Models 'lmsf2' and 'lmsf3' are preferred based on comprehensive comparison 
+# Keep 'lmsf2' and 'lmsf3' 
 # We get two final models
 lm.final1 <- lm(baby_wt ~ gestation + m_race + m_ht + m_wt + d_wt + 
                   smoke + previous_preg + gestation:m_race + gestation:m_wt + 
-                  gestation:previous_preg + m_wt:d_wt, data = lmData) 
+                  gestation:previous_preg + m_wt:d_wt, 
+                data = lmData) 
 
 lm.final2 <- lm(baby_wt ~ gestation + m_race + m_ht + d_wt + smoke + 
                   previous_preg + gestation:m_race + gestation:previous_preg, 
