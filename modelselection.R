@@ -263,3 +263,10 @@ lm.final2 <- lm(baby_wt ~ gestation + m_race + m_ht + d_wt + smoke +
                 data = lmData)
 summary(lm.final1)
 summary(lm.final2)
+
+### Reference
+http://www.instantr.com/2012/12/12/performing-bartletts-test-in-r/
+https://www.statmethods.net/stats/anova.html
+http://www.sthda.com/english/articles/37-model-selection-essentials-in-r/154-stepwise-regression-essentials-in-r/
+https://www.statmethods.net/stats/regression.html
+https://www.jianshu.com/p/5c75cb4bd39f
