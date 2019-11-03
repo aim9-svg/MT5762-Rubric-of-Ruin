@@ -67,9 +67,9 @@ summary(fit6)
 # Explore the difference of 'baby_wt' in different 'cig_number' groups
 # Repeat the process above
 babies_data$cig_number <- factor(babies_data$cig_number)
-qqPlot(lm(baby_wt~cig_number, data = test_cig), simulate = TRUE, main = 'QQ Plot', labels = FALSE)
-bartlett.test(baby_wt~cig_number, data = test_cig)
-fit7 <- aov(baby_wt~cig_number, data = test_cig)
+qqPlot(lm(baby_wt~cig_number, data = babies_data), simulate = TRUE, main = 'QQ Plot', labels = FALSE)
+bartlett.test(baby_wt~cig_number, data = babies_data)
+fit7 <- aov(baby_wt~cig_number, data = babies_data)
 # p value = 1.66e-05 ***, There are significant differences between groups
 summary(fit7)
 
@@ -219,10 +219,11 @@ lm.f2.foi <- lm(baby_wt~(gestation+m_race+m_ht+d_race+d_wt+smoke+previous_preg)^
 lmsf2 <- step(lm.f2.foi)
 summary(lmsf2)
 # Plot the results of the interactions
-plot(effect("gestation:m_race", lmsf2), multiline=TRUE)
+plot(effect("gestation:smoke", lmsf2), multiline=TRUE)
 plot(effect("gestation:previous_preg", lmsf2), multiline=TRUE)
+plot(effect("d_wt:smoke", lmsf2), multiline=TRUE)
 
-#2. Consider all first-order interactions in 'lm.f3' model
+#3. Consider all first-order interactions in 'lm.f3' model
 lm.f3.foi <- lm(baby_wt~(gestation+m_race+m_ht+m_wt+d_race+d_wt+smoke+previous_preg)^2, data = lmData )
 # Use stepwise method to improve the model
 lmsf3 <- step(lm.f3.foi)
