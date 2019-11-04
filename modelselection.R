@@ -241,7 +241,6 @@ ABR2 <- data.frame(
   BIC(lmsf1,lmsf2,lmsf3),
   c(ar2.1,ar2.2,ar2.3)
   )
-colnames = c("df", "AIC", "df", "BIC", "Adjusted R-squared")
 colnames(ABR2) <- c("df", "AIC", "df", "BIC", "Adjusted R-squared")
 ABR2 <- ABR2[,-3]
 ABR2
