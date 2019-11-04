@@ -246,3 +246,4 @@ lm.final2 <- lm(baby_wt ~ gestation + m_race + m_ht + d_wt + smoke +
                 data = lmData)
 summary(lm.final1)
 summary(lm.final2)
+

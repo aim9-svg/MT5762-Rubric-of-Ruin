@@ -20,8 +20,8 @@ babies <- readxl::read_xlsx("Original Data.xlsx")
 ## Clean data
 # delete some variables which are independent of the response variable baby_wt.
 clean_babies <- babies %>%
-  select(-id, -pluralty, -outcome, -date, -sex) %>%
-  rename(baby_wt = wt...7, previous_preg = parity, m_race = race, m_age = age,
+  dplyr::select(-id, -pluralty, -outcome, -date, -sex) %>%
+  dplyr::rename(baby_wt = wt...7, previous_preg = parity, m_race = race, m_age = age,
          m_edu = ed, m_ht = ht, m_wt = wt...13, d_race = drace, d_age = dage, d_edu = ded,
          d_ht = dht, d_wt = dwt, income = inc, smoke_time = time, cig_number = number)
 
